@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CGD CreditFlow Angola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.45.2/apexcharts.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+<style>
+:root{
+  --bg:#f0f4f8;--card:#ffffff;--card2:#f8fafc;--border:#e2e8f0;--border2:#dde5ef;
+  --blue:#2563eb;--blue-d:#1d4ed8;--blue-glow:rgba(37,99,235,.12);
+  --accent:#f59e0b;--red:#ef4444;--green:#10b981;--green-d:#059669;--purple:#8b5cf6;
+  --t1:#0f172a;--t2:#475569;--t3:#94a3b8;
+  --sw:260px;--r:14px;--font:'Inter',sans-serif;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.08);
+}
+body.dark{
+  --bg:#080e1a;--card:#0f1829;--card2:#131f35;--border:#1a2840;--border2:#1e3050;
+  --blue:#3b82f6;--blue-d:#2563eb;--blue-glow:rgba(59,130,246,.2);
+  --t1:#e8f1fd;--t2:#7a96b8;--t3:#3d5470;
+  --sh:0 1px 3px rgba(0,0,0,.5),0 8px 32px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--t1);font-size:13px;line-height:1.5;transition:background .3s,color .3s;}
+a{text-decoration:none;color:inherit;}
+button,select,input{font-family:var(--font);}
+ion-icon{pointer-events:none;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px;}
+body.dark ::-webkit-scrollbar-thumb{background:#1a2840;}
+#pg-login{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;}
+.ll-box{background:var(--card);border-radius:16px;box-shadow:var(--sh);border:1px solid var(--border);width:100%;max-width:400px;padding:38px 42px;}
+.ll-logo{margin-bottom:30px;}
+.ll-logo img{height:34px;object-fit:contain;}
+body.dark .ll-logo img{filter:brightness(0) invert(1);}
+.ll-box h2{font-size:1.35rem;font-weight:800;margin-bottom:3px;color:var(--t1);letter-spacing:-.025em;}
+.ll-box .sub{font-size:.775rem;color:var(--t3);margin-bottom:26px;}
+.fl{margin-bottom:15px;}
+.fl label{display:block;font-size:.65rem;font-weight:600;color:var(--t2);margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase;}
+.fl input{width:100%;border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-size:.82rem;color:var(--t1);background:var(--card2);transition:all .2s;}
+.fl input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow);}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:40px;}
+.pw-eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--t3);display:flex;font-size:.9rem;}
+.opts-row{display:flex;align-items:center;justify-content:space-between;margin:4px 0 20px;}
+.opts-row label{font-size:.72rem;color:var(--t2);display:flex;align-items:center;gap:6px;cursor:pointer;}
+.opts-row input[type=checkbox]{accent-color:var(--blue);}
+.opts-row a{font-size:.72rem;color:var(--blue);font-weight:600;}
+.err-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:9px;padding:9px 13px;font-size:.74rem;color:#fca5a5;display:flex;align-items:center;gap:8px;margin-bottom:13px;}
+.err-box.hidden{display:none;}
+.btn-login{width:100%;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:12px;font-size:.84rem;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(59,130,246,.4);transition:all .2s;}
+.btn-login:hover{background:#2563eb;box-shadow:0 6px 28px rgba(59,130,246,.55);}
+.btn-login:active{transform:scale(.98);}
+.ll-foot{font-size:.64rem;color:var(--t3);text-align:center;margin-top:20px;}
+#pg-app{display:none;min-height:100vh;}
+.sidebar{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:300;overflow-y:auto;overflow-x:hidden;transition:transform .3s,background .3s;}
+.sb-top{padding:16px 18px 13px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sb-top img{height:26px;object-fit:contain;max-width:200px;}
+body.dark .sb-top img{filter:brightness(0) invert(1);}
+.sb-sec{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:13px 18px 4px;}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:.76rem;font-weight:500;color:var(--t2);cursor:pointer;border-left:3px solid transparent;transition:all .15s;}
+.ni:hover{background:rgba(59,130,246,.08);color:var(--blue);}
+.ni.active{background:rgba(59,130,246,.12);color:var(--blue);border-left-color:var(--blue);font-weight:700;}
+.ni ion-icon{font-size:.9rem;flex-shrink:0;opacity:.7;}
+.ni.active ion-icon{opacity:1;}
+.ni .nb{margin-left:auto;border-radius:100px;padding:1px 6px;font-size:.57rem;font-weight:800;}
+.nb-r{background:rgba(239,68,68,.15);color:#fca5a5;}
+.nb-y{background:rgba(245,158,11,.15);color:#fcd34d;}
+.nb-g{background:rgba(16,185,129,.15);color:#6ee7b7;}
+.sb-bot{margin-top:auto;padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.av{border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:800;flex-shrink:0;}
+.sb-user .uname{font-size:.73rem;font-weight:700;}
+.sb-user .urole{font-size:.6rem;color:var(--t3);}
+.sb-logout{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--t3);transition:color .15s;display:flex;}
+.sb-logout:hover{color:var(--red);}
+.main{margin-left:var(--sw);display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 22px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;transition:background .3s;}
+.tb-l{display:flex;align-items:center;gap:8px;}
+.tb-l h1{font-size:.88rem;font-weight:800;color:var(--t1);letter-spacing:-.02em;}
+.tb-r{display:flex;align-items:center;gap:7px;}
+.tb-btn{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:6px 11px;font-size:.7rem;font-weight:600;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;}
+.tb-btn:hover{border-color:var(--blue);color:var(--blue);}
+.notif-dot{position:absolute;top:5px;right:5px;width:5px;height:5px;background:var(--red);border-radius:50%;}
+.notif-wrap{position:relative;}
+.date-tag{font-size:.67rem;color:var(--t3);background:var(--card2);border:1px solid var(--border);border-radius:100px;padding:4px 11px;}
+.theme-btn{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:6px 11px;cursor:pointer;font-size:.7rem;font-weight:600;color:var(--t2);transition:all .15s;}
+.theme-btn:hover{border-color:var(--blue);color:var(--blue);}
+.page{display:none;padding:20px 22px 32px;}
+.page.on{display:block;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+.kc{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;transition:transform .2s,box-shadow .2s;cursor:default;}
+.kc:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.25);border-color:var(--border2);}
+.kc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.kc-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;}
+.kc-chg{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:100px;display:flex;align-items:center;gap:3px;}
+.chg-up{background:rgba(16,185,129,.12);color:#6ee7b7;}
+.chg-dn{background:rgba(239,68,68,.12);color:#fca5a5;}
+.chg-eq{background:rgba(148,163,184,.12);color:var(--t2);}
+.kc-val{font-size:1.75rem;font-weight:800;line-height:1;letter-spacing:-.03em;}
+.kc-lbl{font-size:.62rem;font-weight:500;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;}
+.kc-bar{margin-top:12px;height:3px;background:var(--border);border-radius:10px;overflow:hidden;}
+.kc-fill{height:100%;border-radius:10px;}
+.dash-grid-wide{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:14px;}
+.chart-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:18px;}
+.chart-card h6{font-size:.76rem;font-weight:700;letter-spacing:-.01em;margin-bottom:2px;}
+.chart-sub{font-size:.65rem;color:var(--t3);margin-bottom:14px;}
+.sec-banner{background:linear-gradient(135deg,#1e3a5f,#1d4ed8,#3b82f6);border-radius:var(--r);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+
+.sec-banner h5{font-size:.9rem;font-weight:800;color:#fff;margin:0;}
+.sec-banner p{font-size:.7rem;color:rgba(255,255,255,.65);margin:2px 0 0;}
+.banner-kpis{display:flex;gap:18px;}
+.bk{padding-left:16px;border-left:1px solid rgba(255,255,255,.2);}
+.bk strong{display:block;font-size:1.3rem;font-weight:800;color:#fff;}
+.bk span{font-size:.57rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.5);}
+.tc{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;}
+.tc-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.tc-title{font-size:.76rem;font-weight:700;display:flex;align-items:center;gap:6px;}
+.filters-wrap{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.fsel{border:1px solid var(--border);border-radius:8px;padding:6px 9px;font-size:.69rem;color:var(--t1);background:var(--card2);cursor:pointer;outline:none;}
+.fsel:focus{border-color:var(--blue);}
+.sw{position:relative;}
+.sw ion-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.8rem;}
+.sw input{border:1px solid var(--border);border-radius:8px;padding:6px 8px 6px 26px;font-size:.69rem;width:170px;background:var(--card2);color:var(--t1);outline:none;}
+.sw input:focus{border-color:var(--blue);}
+.t10btn{font-size:.69rem;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--blue);background:transparent;color:var(--blue);transition:all .15s;}
+.t10btn.on{background:var(--blue);color:#fff;}
+table{width:100%;border-collapse:collapse;}
+thead th{font-size:.61rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+thead th:hover{color:var(--blue);}
+tbody td{padding:10px;border-bottom:1px solid var(--border);font-size:.74rem;vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:rgba(59,130,246,.04);}
+.id-mono{font-family:'Courier New',monospace;font-size:.7rem;color:var(--blue);font-weight:700;}
+.cn{font-weight:700;font-size:.75rem;}
+.cs{font-size:.61rem;color:var(--t3);}
+.seg-chip{display:inline-block;padding:2px 8px;border-radius:100px;font-size:.59rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.sc-mm{background:rgba(59,130,246,.12);color:#93c5fd;}.sc-af{background:rgba(16,185,129,.12);color:#6ee7b7;}.sc-em{background:rgba(245,158,11,.12);color:#fcd34d;}.sc-pv{background:rgba(139,92,246,.12);color:#c4b5fd;}
+
+.st-b{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;font-size:.64rem;font-weight:700;}
+.st-b::before{content:'';width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.sb-an{background:rgba(59,130,246,.12);color:#93c5fd;}.sb-an::before{background:#3b82f6;}
+.sb-ca{background:rgba(16,185,129,.12);color:#6ee7b7;}.sb-ca::before{background:#10b981;}
+.sb-dv{background:rgba(245,158,11,.12);color:#fcd34d;}.sb-dv::before{background:#f59e0b;}
+.sb-ap{background:rgba(16,185,129,.15);color:#34d399;}.sb-ap::before{background:#10b981;}
+.sb-cr{background:rgba(239,68,68,.12);color:#fca5a5;}.sb-cr::before{background:#ef4444;}
+.sb-rj{background:rgba(148,163,184,.1);color:var(--t2);}.sb-rj::before{background:var(--t3);}
+
+.dp{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:6px;font-size:.66rem;font-weight:800;}
+.dp-r{background:rgba(239,68,68,.12);color:#fca5a5;}.dp-y{background:rgba(245,158,11,.12);color:#fcd34d;}.dp-g{background:rgba(16,185,129,.12);color:#6ee7b7;}
+
+.pag-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap;gap:8px;}
+.pag-info{font-size:.67rem;color:var(--t3);}
+.pag-btns{display:flex;gap:3px;}
+.pb{width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:.69rem;font-family:var(--font);display:flex;align-items:center;justify-content:center;transition:all .15s;font-weight:600;color:var(--t2);}
+.pb:hover{border-color:var(--blue);color:var(--blue);}.pb.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+.alert-list{display:flex;flex-direction:column;gap:9px;}
+.al{background:var(--card);border-radius:var(--r);border:1px solid var(--border);border-left:3px solid;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;}
+.al.high{border-left-color:var(--red);}.al.med{border-left-color:var(--accent);}.al.low{border-left-color:var(--blue);}
+.al-ico{font-size:1.05rem;flex-shrink:0;margin-top:1px;}
+.al.high .al-ico{color:var(--red);}.al.med .al-ico{color:var(--accent);}.al.low .al-ico{color:var(--blue);}
+.al-body strong{font-size:.77rem;display:block;margin-bottom:2px;}.al-body p{font-size:.69rem;color:var(--t3);margin:0;}
+.al-r{display:flex;flex-direction:column;align-items:flex-end;gap:5px;margin-left:auto;}
+.al-time{font-size:.63rem;color:var(--t3);white-space:nowrap;}
+.sev-tag{padding:2px 8px;border-radius:100px;font-size:.59rem;font-weight:800;text-transform:uppercase;}
+.sev-h{background:rgba(239,68,68,.12);color:#fca5a5;}.sev-m{background:rgba(245,158,11,.12);color:#fcd34d;}.sev-l{background:rgba(59,130,246,.12);color:#93c5fd;}
+.sla-header{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+.seg-bars{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;}
+.seg-bars h6{font-size:.76rem;font-weight:700;margin-bottom:14px;}
+.sbar{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sbar-lbl{width:90px;font-size:.7rem;color:var(--t2);font-weight:500;flex-shrink:0;}
+.sbar-track{flex:1;height:6px;background:var(--border);border-radius:100px;overflow:hidden;}
+.sbar-fill{height:100%;border-radius:100px;transition:width .8s ease;}
+.sbar-pct{width:32px;font-size:.67rem;font-weight:700;text-align:right;flex-shrink:0;}
+.client-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.client-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;}
+.cli-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.cli-av{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:#fff;flex-shrink:0;}
+.cli-name{font-size:.8rem;font-weight:700;}.cli-type{font-size:.63rem;color:var(--t3);}
+.cli-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.cli-stat{background:var(--card2);border-radius:8px;padding:8px;text-align:center;border:1px solid var(--border);}
+.cli-stat strong{display:block;font-size:.88rem;font-weight:800;}.cli-stat span{font-size:.55rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.team-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;}
+.tc2-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.tc2-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;color:#fff;flex-shrink:0;}
+.tc2-name{font-size:.78rem;font-weight:700;}.tc2-role{font-size:.62rem;color:var(--t3);}
+.tc2-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.tc2-stat{background:var(--card2);border-radius:8px;padding:8px;text-align:center;border:1px solid var(--border);}
+.tc2-stat strong{display:block;font-size:.88rem;font-weight:800;}.tc2-stat span{font-size:.55rem;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;}
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.risk-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;}
+.risk-card h6{font-size:.76rem;font-weight:700;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;}
+.risk-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
+.risk-row:last-child{border:none;}.risk-row span{font-size:.74rem;}
+.risk-score{font-size:.71rem;font-weight:700;padding:2px 9px;border-radius:7px;}
+.rs-g{background:rgba(16,185,129,.12);color:#6ee7b7;}.rs-y{background:rgba(245,158,11,.12);color:#fcd34d;}.rs-r{background:rgba(239,68,68,.12);color:#fca5a5;}
+
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.admin-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:18px;}
+.admin-card h6{font-size:.76rem;font-weight:700;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;}
+.cfg-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
+.cfg-row:last-child{border:none;}.cfg-lbl{font-size:.74rem;font-weight:600;}.cfg-sub{font-size:.63rem;color:var(--t3);}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.tgl-sl{position:absolute;inset:0;border-radius:100px;background:var(--border2);cursor:pointer;transition:background .2s;}
+.tgl-sl::before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.toggle input:checked+.tgl-sl{background:var(--blue);}.toggle input:checked+.tgl-sl::before{transform:translateX(16px);}
+.inp-sm{border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-size:.75rem;font-family:var(--font);width:60px;background:var(--card2);color:var(--t1);}
+.inp-sm:focus{outline:none;border-color:var(--blue);}
+.rep-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+.rep-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px;cursor:pointer;transition:all .2s;}
+.rep-card:hover{transform:translateY(-2px);border-color:var(--blue);box-shadow:0 8px 32px rgba(59,130,246,.15);}
+.rep-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:10px;}
+.rep-card h6{font-size:.78rem;font-weight:700;margin-bottom:3px;}.rep-card p{font-size:.67rem;color:var(--t3);}
+.flow-steps{display:flex;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;}
+.flow-step{flex:1;min-width:140px;text-align:center;position:relative;}
+.flow-step::after{content:'';position:absolute;top:19px;right:-1px;width:50%;height:2px;background:var(--border);z-index:0;}
+.flow-step:last-child::after{display:none;}
+.fs-ico{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;margin:0 auto 7px;z-index:1;position:relative;border:2px solid var(--border);background:var(--card);}
+.fs-ico.done{border-color:var(--green);background:rgba(16,185,129,.12);color:var(--green);}
+.fs-ico.active{border-color:var(--blue);background:rgba(59,130,246,.12);color:var(--blue);}
+.fs-ico.pending{border-color:var(--border);color:var(--t3);}
+.flow-step h6{font-size:.69rem;font-weight:700;margin-bottom:2px;}.flow-step p{font-size:.61rem;color:var(--t3);}
+.flow-count{font-size:.92rem;font-weight:800;color:var(--blue);}
+.insight-card{background:linear-gradient(135deg,#0f1e3d,#162033,#1e1a3d);border-radius:var(--r);border:1px solid rgba(59,130,246,.2);padding:20px;position:relative;overflow:hidden;min-height:140px;display:flex;flex-direction:column;justify-content:flex-end;}
+
+.insight-glow{position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:radial-gradient(circle,rgba(99,102,241,.35),transparent 70%);border-radius:50%;}
+.insight-tag{position:absolute;top:14px;left:14px;background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.3);color:#93c5fd;font-size:.62rem;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.04em;text-transform:uppercase;}
+.insight-dots{display:flex;gap:5px;margin-bottom:10px;}
+.insight-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);}
+.insight-dot.on{background:#fff;}
+.insight-text{font-size:.9rem;font-weight:700;color:#fff;line-height:1.4;}
+.insight-btn{position:absolute;bottom:14px;right:14px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;cursor:pointer;}
+@media(max-width:1200px){.kpi-row{grid-template-columns:repeat(2,1fr);}.dash-grid-wide{grid-template-columns:1fr;}}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);}.sidebar.open{transform:translateX(0);}.main{margin-left:0;}.kpi-row{grid-template-columns:repeat(2,1fr);}.risk-grid,.admin-grid,.client-grid,.team-grid,.rep-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div id="pg-login">
+  <div class="ll-box">
+    <div class="ll-logo"><img src="https://ik.imagekit.io/zks5iegia/Caixa-geral-de-depositos.png" alt="CGD"/></div>
+    <h2>Bem-vindo de volta</h2>
+    <p class="sub">Introduza as suas credenciais para aceder</p>
+    <div class="err-box hidden" id="err-box"><ion-icon name="alert-circle-outline" style="font-size:.9rem;flex-shrink:0;"></ion-icon>Credenciais inválidas.</div>
+    <div class="fl"><label>Email</label><input type="email" id="inp-e" value="kiossocamuegi@gmail.com"/></div>
+    <div class="fl"><label>Palavra-passe</label>
+      <div class="pw-wrap"><input type="password" id="inp-p" value="123456"/>
+      <button class="pw-eye" onclick="tglPw()"><ion-icon name="eye-off-outline" id="eye-ic"></ion-icon></button></div>
+    </div>
+    <div class="opts-row"><label><input type="checkbox" checked/> Lembrar 30 dias</label><a href="#">Esqueceu a senha?</a></div>
+    <button class="btn-login" id="btn-l" onclick="doLogin()"><span id="btn-txt">Entrar na plataforma</span></button>
+    <p class="ll-foot">&copy; 2025 Banco Caixa Geral Angola &mdash; Uso restrito</p>
+  </div>
+</div>
+
+<div id="pg-app">
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-top"><img src="https://ik.imagekit.io/zks5iegia/Caixa-geral-de-depositos.png" alt="CGD"/></div>
+    <div class="ni active" onclick="nav('dashboard',this)"><ion-icon name="grid-outline"></ion-icon> Dashboard</div>
+    <div class="sb-sec">Crédito</div>
+    <div class="ni" onclick="nav('processos',this)"><ion-icon name="document-text-outline"></ion-icon> Todos os Processos</div>
+    <div class="ni" onclick="nav('em-analise',this)"><ion-icon name="hourglass-outline"></ion-icon> Em Análise <span class="nb nb-y">98</span></div>
+    <div class="ni" onclick="nav('em-atraso',this)"><ion-icon name="warning-outline"></ion-icon> Em Atraso <span class="nb nb-r">54</span></div>
+    <div class="ni" onclick="nav('devolvidos',this)"><ion-icon name="return-up-back-outline"></ion-icon> Devolvidos <span class="nb nb-y">31</span></div>
+    <div class="ni" onclick="nav('aprovados',this)"><ion-icon name="checkmark-circle-outline"></ion-icon> Aprovados <span class="nb nb-g">35</span></div>
+    <div class="ni" onclick="nav('rejeitados',this)"><ion-icon name="close-circle-outline"></ion-icon> Rejeitados</div>
+    <div class="sb-sec">Pipeline</div>
+    <div class="ni" onclick="nav('fluxo',this)"><ion-icon name="git-branch-outline"></ion-icon> Fluxo de Crédito</div>
+    <div class="ni" onclick="nav('sla',this)"><ion-icon name="timer-outline"></ion-icon> SLA &amp; Prazos</div>
+    <div class="sb-sec">Clientes</div>
+    <div class="ni" onclick="nav('individuais',this)"><ion-icon name="person-outline"></ion-icon> Individuais</div>
+    <div class="ni" onclick="nav('empresas',this)"><ion-icon name="business-outline"></ion-icon> Empresas</div>
+    <div class="sb-sec">Operações</div>
+    <div class="ni" onclick="nav('balcoes',this)"><ion-icon name="location-outline"></ion-icon> Balcões</div>
+    <div class="ni" onclick="nav('equipas',this)"><ion-icon name="people-outline"></ion-icon> Equipas</div>
+    <div class="sb-sec">Risco</div>
+    <div class="ni" onclick="nav('risco',this)"><ion-icon name="analytics-outline"></ion-icon> Análise de Risco</div>
+    <div class="ni" onclick="nav('compliance',this)"><ion-icon name="shield-checkmark-outline"></ion-icon> Compliance</div>
+    <div class="ni" onclick="nav('fraude',this)"><ion-icon name="ban-outline"></ion-icon> Alertas Fraude <span class="nb nb-r">2</span></div>
+    <div class="sb-sec">Relatórios</div>
+    <div class="ni" onclick="nav('relatorios',this)"><ion-icon name="bar-chart-outline"></ion-icon> Analytics</div>
+    <div class="ni" onclick="nav('exportar',this)"><ion-icon name="cloud-download-outline"></ion-icon> Exportar Dados</div>
+    <div class="sb-sec">Sistema</div>
+    <div class="ni" onclick="nav('alertas',this)"><ion-icon name="notifications-outline"></ion-icon> Alertas <span class="nb nb-r">3</span></div>
+    <div class="ni" onclick="nav('usuarios',this)"><ion-icon name="people-circle-outline"></ion-icon> Utilizadores</div>
+    <div class="ni" onclick="nav('config',this)"><ion-icon name="settings-outline"></ion-icon> Configurações</div>
+    <div class="sb-bot">
+      <div class="av" style="width:32px;height:32px;">K</div>
+      <div class="sb-user"><div class="uname">Kiosso Camuegi</div><div class="urole">Gestor de Crédito</div></div>
+      <button class="sb-logout" onclick="doLogout()"><ion-icon name="log-out-outline" style="font-size:.9rem;"></ion-icon></button>
+    </div>
+  </nav>
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-l">
+        <button class="tb-btn" id="mob-menu" onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none;"><ion-icon name="menu-outline"></ion-icon></button>
+        <h1 id="pg-title">Dashboard</h1>
+      </div>
+      <div class="tb-r">
+        <span class="date-tag" id="dtag"></span>
+        <button class="theme-btn" onclick="tglTheme()"><ion-icon name="moon-outline" id="theme-ico"></ion-icon><span id="theme-lbl">Escuro</span></button>
+        <button class="tb-btn notif-wrap"><ion-icon name="notifications-outline"></ion-icon><span class="notif-dot"></span></button>
+        <div class="av" style="width:28px;height:28px;font-size:.6rem;">K</div>
+      </div>
+    </div>
+
+    <div id="v-dashboard" class="page on">
+      <div class="kpi-row">
+        <div class="kc"><div class="kc-top"><div class="kc-ico" style="background:rgba(59,130,246,.12);color:var(--blue);"><ion-icon name="document-outline"></ion-icon></div><span class="kc-chg chg-up"><ion-icon name="trending-up-outline"></ion-icon>+12</span></div><div class="kc-val">248</div><div class="kc-lbl">Processos em Curso</div><div class="kc-bar"><div class="kc-fill" style="width:78%;background:var(--blue);"></div></div></div>
+        <div class="kc"><div class="kc-top"><div class="kc-ico" style="background:rgba(16,185,129,.12);color:var(--green);"><ion-icon name="checkmark-circle-outline"></ion-icon></div><span class="kc-chg chg-up"><ion-icon name="trending-up-outline"></ion-icon>+3%</span></div><div class="kc-val" style="color:var(--green);">78%</div><div class="kc-lbl">Dentro do SLA</div><div class="kc-bar"><div class="kc-fill" style="width:78%;background:var(--green);"></div></div></div>
+        <div class="kc"><div class="kc-top"><div class="kc-ico" style="background:rgba(239,68,68,.12);color:var(--red);"><ion-icon name="alert-circle-outline"></ion-icon></div><span class="kc-chg chg-dn"><ion-icon name="trending-down-outline"></ion-icon>-5</span></div><div class="kc-val" style="color:var(--red);">54</div><div class="kc-lbl">Em Atraso</div><div class="kc-bar"><div class="kc-fill" style="width:22%;background:var(--red);"></div></div></div>
+        <div class="kc"><div class="kc-top"><div class="kc-ico" style="background:rgba(245,158,11,.12);color:var(--accent);"><ion-icon name="return-up-back-outline"></ion-icon></div><span class="kc-chg chg-eq"><ion-icon name="remove-outline"></ion-icon>Estável</span></div><div class="kc-val" style="color:var(--accent);">31</div><div class="kc-lbl">Devolvidos</div><div class="kc-bar"><div class="kc-fill" style="width:12%;background:var(--accent);"></div></div></div>
+      </div>
+      <div class="dash-grid-wide">
+        <div class="chart-card"><h6>Evolução dos Processos</h6><p class="chart-sub">Últimos 6 meses</p><div id="lineChart"></div></div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="insight-card"><div class="insight-glow"></div><span class="insight-tag">AI Insights</span><div class="insight-dots"><div class="insight-dot on"></div><div class="insight-dot"></div><div class="insight-dot"></div></div><div class="insight-text">SLA Luanda Norte caiu 12% esta semana — acção recomendada.</div><div class="insight-btn"><ion-icon name="arrow-forward-outline"></ion-icon></div></div>
+          <div class="chart-card"><h6>Por Estado</h6><p class="chart-sub">Pipeline actual</p><div id="donutChart"></div></div>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-bottom:14px;"><h6>Performance por Balcão</h6><p class="chart-sub">Volume e atrasos — últimos 30 dias</p><div id="barChart"></div></div>
+
+      <div class="tc" style="margin-bottom:14px;">
+        <div class="tc-head">
+          <div class="tc-title" style="font-size:.8rem;"><ion-icon name="time-outline"></ion-icon> Últimos Créditos Submetidos</div>
+          <div class="filters-wrap">
+            <div class="sw"><ion-icon name="search-outline"></ion-icon><input type="text" id="dash-srch" placeholder="Pesquisar cliente, ID..." oninput="dashFilter()"/></div>
+            <select class="fsel" id="dash-est" onchange="dashFilter()"><option value="">Todos os Estados</option><option>Em Análise</option><option>Carregado</option><option>Devolvido</option><option>Aprovado</option><option>Crítico</option><option>Rejeitado</option></select>
+            <select class="fsel" id="dash-bal" onchange="dashFilter()"><option value="">Todos os Balcões</option><option>Luanda Centro</option><option>Luanda Norte</option><option>Benguela</option><option>Huambo</option><option>Cabinda</option></select>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th onclick="dashSort('id')" style="cursor:pointer;">ID <ion-icon name="swap-vertical-outline" style="vertical-align:middle;opacity:.5;font-size:.7rem;"></ion-icon></th>
+                <th onclick="dashSort('client')" style="cursor:pointer;">Cliente <ion-icon name="swap-vertical-outline" style="vertical-align:middle;opacity:.5;font-size:.7rem;"></ion-icon></th>
+                <th>Segmento</th>
+                <th onclick="dashSort('value')" style="cursor:pointer;">Valor (Kz) <ion-icon name="swap-vertical-outline" style="vertical-align:middle;opacity:.5;font-size:.7rem;"></ion-icon></th>
+                <th>Balcão</th>
+                <th>Operador Responsável</th>
+                <th onclick="dashSort('createdAt')" style="cursor:pointer;">Submetido <ion-icon name="swap-vertical-outline" style="vertical-align:middle;opacity:.5;font-size:.7rem;"></ion-icon></th>
+                <th onclick="dashSort('delay')" style="cursor:pointer;">Prazo <ion-icon name="swap-vertical-outline" style="vertical-align:middle;opacity:.5;font-size:.7rem;"></ion-icon></th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="dash-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pag-row">
+          <span class="pag-info" id="dash-pag-i"></span>
+          <div class="pag-btns" id="dash-pag-b"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="v-processos" class="page">
+      <div class="sec-banner"><div><h5 id="proc-banner-title">Todos os Processos</h5><p>Ordenados por criticidade</p></div><div class="banner-kpis"><div class="bk"><strong id="bk-total">248</strong><span>Total</span></div><div class="bk"><strong id="bk-crit">12</strong><span>Críticos</span></div><div class="bk"><strong id="bk-atr">54</strong><span>Em Atraso</span></div></div></div>
+      <div class="tc">
+        <div class="tc-head">
+          <div class="tc-title"><ion-icon name="list-outline"></ion-icon><span id="table-subtitle">Lista</span></div>
+          <div class="filters-wrap">
+            <div class="sw"><ion-icon name="search-outline"></ion-icon><input type="text" id="srch" placeholder="Pesquisar..." oninput="applyF()"/></div>
+            <select class="fsel" id="f-seg" onchange="applyF()"><option value="">Segmento</option><option>Mass Market</option><option>Affluent</option><option>Empresa</option><option>Private</option></select>
+            <select class="fsel" id="f-est" onchange="applyF()"><option value="">Estado</option><option>Em Análise</option><option>Carregado</option><option>Devolvido</option><option>Aprovado</option><option>Crítico</option><option>Rejeitado</option></select>
+            <select class="fsel" id="f-bal" onchange="applyF()"><option value="">Balcão</option><option>Luanda Centro</option><option>Luanda Norte</option><option>Benguela</option><option>Huambo</option><option>Cabinda</option></select>
+            <button class="t10btn" id="t10-btn" onclick="tglTop10()">Top 10 Críticos</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;"><table><thead><tr><th onclick="srt(0)">ID</th><th onclick="srt(1)">Cliente</th><th>Segmento</th><th>Balcão</th><th onclick="srt(4)">Valor (Kz)</th><th>Responsável</th><th onclick="srt(6)">Atraso</th><th>Estado</th></tr></thead><tbody id="ptbody"></tbody></table></div>
+        <div class="pag-row"><span class="pag-info" id="pag-i"></span><div class="pag-btns" id="pag-b"></div></div>
+      </div>
+    </div>
+
+    <div id="v-fluxo" class="page">
+      <div class="sec-banner"><div><h5>Fluxo de Crédito</h5><p>Submissão → Decisão Final</p></div></div>
+      <div class="chart-card" style="margin-bottom:12px;"><h6 style="margin-bottom:14px;">Pipeline — Etapas</h6>
+        <div class="flow-steps">
+          <div class="flow-step"><div class="fs-ico done"><ion-icon name="cloud-upload-outline"></ion-icon></div><div class="flow-count">80</div><h6>Submetido</h6><p>Carregado</p></div>
+          <div class="flow-step"><div class="fs-ico done"><ion-icon name="document-text-outline"></ion-icon></div><div class="flow-count">65</div><h6>Documentação</h6><p>Verificação</p></div>
+          <div class="flow-step"><div class="fs-ico active"><ion-icon name="search-outline"></ion-icon></div><div class="flow-count">98</div><h6>Análise</h6><p>Em análise</p></div>
+          <div class="flow-step"><div class="fs-ico active"><ion-icon name="shield-outline"></ion-icon></div><div class="flow-count">42</div><h6>Risco</h6><p>Score</p></div>
+          <div class="flow-step"><div class="fs-ico pending"><ion-icon name="person-outline"></ion-icon></div><div class="flow-count" style="color:var(--t3);">28</div><h6>Aprovação</h6><p>Aguarda</p></div>
+          <div class="flow-step"><div class="fs-ico pending"><ion-icon name="checkmark-done-outline"></ion-icon></div><div class="flow-count" style="color:var(--t3);">35</div><h6>Decisão</h6><p>Final</p></div>
+        </div>
+      </div>
+      <div class="dash-grid-wide"><div class="chart-card"><h6>Evolução do Fluxo</h6><div id="flowLineChart"></div></div><div class="chart-card"><h6>Distribuição</h6><div id="flowPolarChart"></div></div></div>
+    </div>
+
+    <div id="v-sla" class="page">
+      <div class="sla-header">
+        <div class="kc"><div class="kc-top"><div class="kc-ico" style="background:rgba(59,130,246,.12);color:var(--blue);"><ion-icon name="timer-outline"></ion-icon></div></div><div class="kc-val" style="color:var(--blue);">78%</div><div class="kc-lbl">SLA Global</div></div>
+        <div class="kc"><div class="kc-top"><div class="kc-ico" style="background:rgba(16,185,129,.12);color:var(--green);"><ion-icon name="checkmark-done-outline"></ion-icon></div></div><div class="kc-val" style="color:var(--green);">5.2d</div><div class="kc-lbl">Tempo Médio</div></div>
+        <div class="kc"><div class="kc-top"><div class="kc-ico" style="background:rgba(239,68,68,.12);color:var(--red);"><ion-icon name="close-circle-outline"></ion-icon></div></div><div class="kc-val" style="color:var(--red);">22%</div><div class="kc-lbl">Fora do SLA</div></div>
+        <div class="kc"><div class="kc-top"><div class="kc-ico" style="background:rgba(245,158,11,.12);color:var(--accent);"><ion-icon name="hourglass-outline"></ion-icon></div></div><div class="kc-val" style="color:var(--accent);">3.8d</div><div class="kc-lbl">Prazo Definido</div></div>
+      </div>
+      <div class="chart-card" style="margin-bottom:12px;"><h6>SLA por Balcão</h6><div id="slaBarChart"></div></div>
+      <div class="seg-bars"><h6>SLA por Segmento</h6><div id="seg-bars-wrap"></div></div>
+    </div>
+
+    <div id="v-individuais" class="page"><div class="sec-banner"><div><h5>Clientes Individuais</h5><p>Mass Market e Affluent</p></div></div><div class="client-grid" id="ind-grid"></div></div>
+    <div id="v-empresas" class="page"><div class="sec-banner"><div><h5>Empresas</h5><p>Clientes Empresariais e Private</p></div></div><div class="client-grid" id="emp-grid"></div></div>
+    <div id="v-balcoes" class="page"><div class="sec-banner"><div><h5>Balcões</h5><p>Performance e distribuição</p></div></div><div class="chart-card" style="margin-bottom:12px;"><h6>Volume por Balcão</h6><div id="balcaoChart"></div></div><div class="seg-bars"><h6>SLA por Balcão</h6><div id="balcao-bars"></div></div></div>
+    <div id="v-equipas" class="page"><div class="sec-banner"><div><h5>Gestão de Equipas</h5><p>Performance dos analistas</p></div></div><div class="team-grid" id="team-grid"></div></div>
+    <div id="v-risco" class="page"><div class="sec-banner"><div><h5>Análise de Risco</h5><p>Score automático por processo</p></div></div><div class="risk-grid" id="risk-grid"></div></div>
+    <div id="v-compliance" class="page"><div class="sec-banner"><div><h5>Compliance</h5><p>Monitoramento regulatório</p></div></div><div class="risk-grid"><div class="risk-card"><h6><ion-icon name="shield-checkmark-outline" style="color:var(--green);"></ion-icon>Verificações</h6><div class="risk-row"><span>KYC</span><span class="risk-score rs-g">Conforme</span></div><div class="risk-row"><span>AML</span><span class="risk-score rs-g">Conforme</span></div><div class="risk-row"><span>Limites Regulatório</span><span class="risk-score rs-y">Em Revisão</span></div><div class="risk-row"><span>Relatórios BNA</span><span class="risk-score rs-g">Actualizado</span></div></div><div class="risk-card"><h6><ion-icon name="document-text-outline" style="color:var(--blue);"></ion-icon>Documentação</h6><div class="risk-row"><span>Política de Crédito 2025</span><span class="risk-score rs-g">Vigente</span></div><div class="risk-row"><span>Manual de Procedimentos</span><span class="risk-score rs-y">Pendente</span></div><div class="risk-row"><span>Relatório BNA Q1</span><span class="risk-score rs-g">Submetido</span></div><div class="risk-row"><span>Auditoria Interna</span><span class="risk-score rs-r">Agendada</span></div></div></div></div>
+    <div id="v-fraude" class="page"><div class="sec-banner" style="background:linear-gradient(135deg,#450a0a,#991b1b,#dc2626);"><div><h5>Alertas de Fraude</h5><p>Detecção automática</p></div><div class="banner-kpis"><div class="bk"><strong>2</strong><span>Activos</span></div></div></div><div class="alert-list"><div class="al high"><ion-icon name="ban-outline" class="al-ico"></ion-icon><div class="al-body"><strong>CGD-2025019 — Documentação Suspeita</strong><p>Metadados inconsistentes. Análise forense recomendada.</p></div><div class="al-r"><span class="sev-tag sev-h">Crítico</span><span class="al-time">1h atrás</span></div></div><div class="al high"><ion-icon name="alert-circle-outline" class="al-ico"></ion-icon><div class="al-body"><strong>Grupo X — Múltiplas Submissões</strong><p>3 processos similares em menos de 24h.</p></div><div class="al-r"><span class="sev-tag sev-h">Alto</span><span class="al-time">3h atrás</span></div></div></div></div>
+    <div id="v-alertas" class="page"><div class="sec-banner"><div><h5>Alertas Inteligentes</h5><p>Detecção automática de situações críticas</p></div></div><div class="alert-list" id="alert-full-list"></div></div>
+    <div id="v-relatorios" class="page"><div class="sec-banner"><div><h5>Analytics &amp; Relatórios</h5><p>Visão estratégica</p></div></div><div class="rep-grid"><div class="rep-card"><div class="rep-ico" style="background:rgba(59,130,246,.12);color:var(--blue);"><ion-icon name="bar-chart-outline"></ion-icon></div><h6>Performance Global</h6><p>SLA e tendências mensais</p></div><div class="rep-card"><div class="rep-ico" style="background:rgba(16,185,129,.12);color:var(--green);"><ion-icon name="trending-up-outline"></ion-icon></div><h6>Análise de Crescimento</h6><p>Volume por período</p></div><div class="rep-card"><div class="rep-ico" style="background:rgba(245,158,11,.12);color:var(--accent);"><ion-icon name="pie-chart-outline"></ion-icon></div><h6>Segmentação</h6><p>Distribuição por segmento</p></div><div class="rep-card"><div class="rep-ico" style="background:rgba(239,68,68,.12);color:var(--red);"><ion-icon name="alert-circle-outline"></ion-icon></div><h6>Relatório de Atrasos</h6><p>Processos fora de SLA</p></div><div class="rep-card"><div class="rep-ico" style="background:rgba(139,92,246,.12);color:var(--purple);"><ion-icon name="people-outline"></ion-icon></div><h6>Performance Equipas</h6><p>Produtividade por analista</p></div><div class="rep-card"><div class="rep-ico" style="background:rgba(59,130,246,.12);color:var(--blue);"><ion-icon name="analytics-outline"></ion-icon></div><h6>Insights de Risco</h6><p>Score médio e padrões</p></div></div></div>
+    <div id="v-exportar" class="page"><div class="sec-banner"><div><h5>Exportar Dados</h5><p>Download de relatórios</p></div></div><div class="rep-grid"><div class="rep-card"><div class="rep-ico" style="background:rgba(16,185,129,.12);color:var(--green);"><ion-icon name="document-outline"></ion-icon></div><h6>Excel</h6><p>Processos em .xlsx</p></div><div class="rep-card"><div class="rep-ico" style="background:rgba(239,68,68,.12);color:var(--red);"><ion-icon name="document-text-outline"></ion-icon></div><h6>PDF</h6><p>Relatório executivo</p></div><div class="rep-card"><div class="rep-ico" style="background:rgba(148,163,184,.1);color:var(--t2);"><ion-icon name="code-outline"></ion-icon></div><h6>CSV</h6><p>Dados brutos</p></div></div></div>
+    <div id="v-usuarios" class="page"><div class="sec-banner"><div><h5>Utilizadores</h5><p>Acessos e perfis</p></div></div><div class="tc"><table><thead><tr><th>Nome</th><th>Email</th><th>Perfil</th><th>Balcão</th><th>Estado</th></tr></thead><tbody><tr><td class="cn">Kiosso Camuegi</td><td style="font-size:.69rem;color:var(--t3);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fa919395898995999b978f9f9d93ba9d979b9396d4999597">[email&#160;protected]</a></td><td><span class="seg-chip sc-pv">Admin</span></td><td>Luanda Centro</td><td><span class="st-b sb-ap">Activo</span></td></tr><tr><td class="cn">Ana Rodrigues</td><td style="font-size:.69rem;color:var(--t3);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8beae5eaa5f9e4eff9e2ecfeeef8cbe8ecefa5eae4">[email&#160;protected]</a></td><td><span class="seg-chip sc-af">Analista Sénior</span></td><td>Luanda Centro</td><td><span class="st-b sb-ap">Activo</span></td></tr><tr><td class="cn">João Silva</td><td style="font-size:.69rem;color:var(--t3);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="23494c424c0d504a4f5542634044470d424c">[email&#160;protected]</a></td><td><span class="seg-chip sc-mm">Analista</span></td><td>Luanda Norte</td><td><span class="st-b sb-ap">Activo</span></td></tr><tr><td class="cn">Bruno Ferreira</td><td style="font-size:.69rem;color:var(--t3);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="86e4f4f3e8e9a8e0e3f4f4e3eff4e7c6e5e1e2a8e7e9">[email&#160;protected]</a></td><td><span class="seg-chip sc-em">Gestor</span></td><td>Benguela</td><td><span class="st-b sb-dv">Inactivo</span></td></tr></tbody></table></div></div>
+    <div id="v-permissoes" class="page"><div class="sec-banner"><div><h5>Perfis &amp; Permissões</h5></div></div><div class="admin-grid"><div class="admin-card"><h6><ion-icon name="shield-outline"></ion-icon>Analista</h6><div class="cfg-row"><div class="cfg-lbl">Ver Processos</div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div class="cfg-lbl">Editar Processos</div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div class="cfg-lbl">Aprovar Créditos</div><label class="toggle"><input type="checkbox"/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div class="cfg-lbl">Exportar Dados</div><label class="toggle"><input type="checkbox"/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div class="cfg-lbl">Acesso Admin</div><label class="toggle"><input type="checkbox"/><span class="tgl-sl"></span></label></div></div><div class="admin-card"><h6><ion-icon name="key-outline"></ion-icon>Gestor</h6><div class="cfg-row"><div class="cfg-lbl">Ver Processos</div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div class="cfg-lbl">Editar Processos</div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div class="cfg-lbl">Aprovar Créditos</div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div class="cfg-lbl">Exportar Dados</div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div class="cfg-lbl">Acesso Admin</div><label class="toggle"><input type="checkbox"/><span class="tgl-sl"></span></label></div></div></div></div>
+    <div id="v-config" class="page"><div class="sec-banner"><div><h5>Configurações</h5><p>Parâmetros da plataforma</p></div></div><div class="admin-grid"><div class="admin-card"><h6><ion-icon name="notifications-outline"></ion-icon>Notificações</h6><div class="cfg-row"><div><div class="cfg-lbl">Alertas por Email</div><div class="cfg-sub">Processos críticos</div></div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div><div class="cfg-lbl">Alertas SMS</div></div><label class="toggle"><input type="checkbox"/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div><div class="cfg-lbl">Escalação Automática</div></div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div><div class="cfg-lbl">Relatório Diário</div><div class="cfg-sub">Sumário às 8h</div></div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div></div><div class="admin-card"><h6><ion-icon name="timer-outline"></ion-icon>Parâmetros SLA</h6><div class="cfg-row"><div class="cfg-lbl">Prazo SLA (dias)</div><input class="inp-sm" type="number" value="5"/></div><div class="cfg-row"><div class="cfg-lbl">Alerta de Atraso</div><input class="inp-sm" type="number" value="3"/></div><div class="cfg-row"><div class="cfg-lbl">Meta SLA (%)</div><input class="inp-sm" type="number" value="85"/></div></div><div class="admin-card"><h6><ion-icon name="analytics-outline"></ion-icon>Integrações</h6><div class="cfg-row"><div><div class="cfg-lbl">Core Bancário</div><div class="cfg-sub">Sincronização automática</div></div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div><div class="cfg-lbl">CRM Interno</div></div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div><div class="cfg-lbl">Sistema de Scoring</div></div><label class="toggle"><input type="checkbox"/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div><div class="cfg-lbl">Exportação PDF/Excel</div></div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div></div><div class="admin-card"><h6><ion-icon name="lock-closed-outline"></ion-icon>Segurança</h6><div class="cfg-row"><div class="cfg-lbl">Autenticação 2FA</div><label class="toggle"><input type="checkbox"/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div><div class="cfg-lbl">Sessão Automática</div><div class="cfg-sub">30min</div></div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div><div class="cfg-row"><div class="cfg-lbl">Log de Acessos</div><label class="toggle"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div></div></div></div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const C={e:"kiossocamuegi@gmail.com",p:"123456"};
+let isDark=false;
+const chartInstances={};
+
+function doLogin(){
+  const e=document.getElementById('inp-e').value.trim(),p=document.getElementById('inp-p').value.trim();
+  const err=document.getElementById('err-box'),t=document.getElementById('btn-txt');
+  err.classList.add('hidden');
+  t.innerHTML='<span style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:_s .7s linear infinite;vertical-align:middle;margin-right:6px;"></span>A verificar...';
+  document.head.insertAdjacentHTML('beforeend','<style>@keyframes _s{to{transform:rotate(360deg)}}</style>');
+  setTimeout(()=>{
+    if(e===C.e&&p===C.p){document.getElementById('pg-login').style.display='none';document.getElementById('pg-app').style.display='block';initApp();}
+    else{err.classList.remove('hidden');t.textContent='Entrar na plataforma';}
+  },900);
+}
+function doLogout(){document.getElementById('pg-app').style.display='none';document.getElementById('pg-login').style.display='flex';document.getElementById('btn-txt').textContent='Entrar na plataforma';}
+function tglPw(){const i=document.getElementById('inp-p'),ic=document.getElementById('eye-ic');i.type=i.type==='password'?'text':'password';ic.setAttribute('name',i.type==='password'?'eye-off-outline':'eye-outline');}
+document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&document.getElementById('pg-login').style.display!=='none')doLogin();});
+
+function tglTheme(){
+  isDark=!isDark;
+  document.body.classList.toggle('dark',isDark);
+  document.getElementById('theme-ico').setAttribute('name',isDark?'sunny-outline':'moon-outline');
+  document.getElementById('theme-lbl').textContent=isDark?'Claro':'Escuro';
+  rebuildCharts();
+}
+
+function rebuildCharts(){
+  Object.keys(chartInstances).forEach(k=>{try{chartInstances[k].destroy();delete chartInstances[k];}catch(e){}});
+  const on=document.querySelector('.page.on');
+  if(!on)return;
+  const id=on.id.replace('v-','');
+  if(id==='dashboard')initMainCharts();
+  else if(id==='sla'){slaInit=false;initSLARings();}
+  else if(id==='balcoes'){balcaoInit=false;initBalcaoChart();}
+  else if(id==='fluxo'){flowInit=false;initFlowCharts();}
+}
+
+const fg=()=>isDark?'#7a96b8':'#64748b';
+const gridC=()=>isDark?'#1a2840':'#e2e8f0';
+const tooltipTheme=()=>isDark?'dark':'light';
+const apexBase=(h=220)=>({chart:{background:'transparent',toolbar:{show:false},fontFamily:'Inter',height:h,animations:{enabled:true,speed:500}},theme:{mode:isDark?'dark':'light'},grid:{borderColor:gridC(),strokeDashArray:4},dataLabels:{enabled:false},tooltip:{theme:tooltipTheme()},legend:{labels:{colors:fg()},fontSize:'11px'}});
+
+function initMainCharts(){
+  const months=['Ago','Set','Out','Nov','Dez','Jan'];
+  chartInstances.line=new ApexCharts(document.getElementById('lineChart'),{...apexBase(200),chart:{...apexBase().chart,type:'area',height:200},series:[{name:'Carregado',data:[42,58,53,67,71,80]},{name:'Em Análise',data:[38,45,50,48,60,65]},{name:'Devolvido',data:[12,18,14,20,16,22]}],xaxis:{categories:months,labels:{style:{colors:fg(),fontSize:'11px'}},axisBorder:{show:false},axisTicks:{show:false}},yaxis:{labels:{style:{colors:fg(),fontSize:'11px'}}},colors:['#3b82f6','#10b981','#f59e0b'],fill:{type:'gradient',gradient:{opacityFrom:.4,opacityTo:.02}},stroke:{curve:'smooth',width:2}});
+  chartInstances.line.render();
+
+  chartInstances.donut=new ApexCharts(document.getElementById('donutChart'),{...apexBase(170),chart:{...apexBase().chart,type:'donut',height:170},series:[98,72,31,35,12],labels:['Em Análise','Carregado','Devolvido','Aprovado','Crítico'],colors:['#3b82f6','#10b981','#f59e0b','#059669','#ef4444'],plotOptions:{pie:{donut:{size:'70%',labels:{show:true,total:{show:true,label:'Total',color:fg(),fontSize:'11px',formatter:()=>'248'}}}}},dataLabels:{enabled:false},legend:{position:'bottom',fontSize:'10px',labels:{colors:fg()}}});
+  chartInstances.donut.render();
+
+  chartInstances.bar=new ApexCharts(document.getElementById('barChart'),{...apexBase(200),chart:{...apexBase().chart,type:'bar',height:200},series:[{name:'Processos',data:[194,87,52,38,21]},{name:'Em Atraso',data:[18,28,9,5,8]}],xaxis:{categories:['Luanda Centro','Luanda Norte','Benguela','Huambo','Cabinda'],labels:{style:{colors:fg(),fontSize:'11px'}}},yaxis:{labels:{style:{colors:fg(),fontSize:'11px'}}},colors:['#3b82f6','#ef4444'],plotOptions:{bar:{borderRadius:6,columnWidth:'55%'}}});
+  chartInstances.bar.render();
+}
+
+let slaInit=false,balcaoInit=false,flowInit=false;
+
+function initSLARings(){
+  chartInstances.slaBar=new ApexCharts(document.getElementById('slaBarChart'),{...apexBase(220),chart:{...apexBase().chart,type:'bar',height:220},series:[{name:'SLA %',data:[88,61,74,83,58]}],xaxis:{categories:['Luanda Centro','Luanda Norte','Benguela','Huambo','Cabinda'],labels:{style:{colors:fg(),fontSize:'11px'}}},yaxis:{max:100,labels:{style:{colors:fg(),fontSize:'11px'}}},colors:['#3b82f6'],plotOptions:{bar:{borderRadius:7,columnWidth:'45%',dataLabels:{position:'top'}}},dataLabels:{enabled:true,formatter:v=>v+'%',style:{colors:[fg()],fontSize:'11px'},offsetY:-18}});
+  chartInstances.slaBar.render();
+  const bars=[{l:'Mass Market',p:82,c:'#3b82f6'},{l:'Affluent',p:91,c:'#10b981'},{l:'Empresa',p:68,c:'#f59e0b'},{l:'Private',p:95,c:'#8b5cf6'}];
+  document.getElementById('seg-bars-wrap').innerHTML=bars.map(b=>`<div class="sbar"><span class="sbar-lbl">${b.l}</span><div class="sbar-track"><div class="sbar-fill" style="width:${b.p}%;background:${b.c};"></div></div><span class="sbar-pct" style="color:${b.c};">${b.p}%</span></div>`).join('');
+}
+
+function initBalcaoChart(){
+  chartInstances.balcao=new ApexCharts(document.getElementById('balcaoChart'),{...apexBase(240),chart:{...apexBase().chart,type:'bar',height:240},series:[{name:'Processos Totais',data:[194,87,52,38,21]},{name:'Em Atraso',data:[18,28,9,5,8]}],xaxis:{categories:['Luanda Centro','Luanda Norte','Benguela','Huambo','Cabinda'],labels:{style:{colors:fg(),fontSize:'11px'}}},yaxis:{labels:{style:{colors:fg(),fontSize:'11px'}}},colors:['#3b82f6','#ef4444'],plotOptions:{bar:{borderRadius:6,columnWidth:'55%'}}});
+  chartInstances.balcao.render();
+  const bb=[{l:'Luanda Centro',p:88},{l:'Luanda Norte',p:61},{l:'Benguela',p:74},{l:'Huambo',p:83},{l:'Cabinda',p:58}];
+  document.getElementById('balcao-bars').innerHTML=bb.map(b=>`<div class="sbar"><span class="sbar-lbl">${b.l}</span><div class="sbar-track"><div class="sbar-fill" style="width:${b.p}%;background:${b.p>=80?'#10b981':b.p>=70?'#f59e0b':'#ef4444'};"></div></div><span class="sbar-pct" style="color:${b.p>=80?'#10b981':b.p>=70?'#f59e0b':'#ef4444'};">${b.p}%</span></div>`).join('');
+}
+
+function initFlowCharts(){
+  const months=['Ago','Set','Out','Nov','Dez','Jan'];
+  chartInstances.flowLine=new ApexCharts(document.getElementById('flowLineChart'),{...apexBase(220),chart:{...apexBase().chart,type:'area',height:220},series:[{name:'Submetidos',data:[40,55,48,62,68,75]},{name:'Aprovados',data:[28,35,32,40,48,55]},{name:'Devolvidos',data:[8,12,10,14,12,18]}],xaxis:{categories:months,labels:{style:{colors:fg(),fontSize:'11px'}},axisBorder:{show:false},axisTicks:{show:false}},yaxis:{labels:{style:{colors:fg(),fontSize:'11px'}}},colors:['#3b82f6','#10b981','#f59e0b'],fill:{type:'gradient',gradient:{opacityFrom:.35,opacityTo:.02}},stroke:{curve:'smooth',width:2}});
+  chartInstances.flowLine.render();
+  chartInstances.flowPolar=new ApexCharts(document.getElementById('flowPolarChart'),{chart:{type:'polarArea',height:220,background:'transparent',toolbar:{show:false},fontFamily:'Inter'},theme:{mode:isDark?'dark':'light'},series:[80,65,98,42,28,35],labels:['Submetido','Documentação','Análise','Risco','Aprovação','Decisão'],colors:['#3b82f6','#06b6d4','#10b981','#f59e0b','#8b5cf6','#059669'],fill:{opacity:.75},stroke:{width:1},dataLabels:{enabled:false},legend:{labels:{colors:fg()},fontSize:'10px'}});
+  chartInstances.flowPolar.render();
+}
+
+const titles={dashboard:'Dashboard',processos:'Todos os Processos','em-analise':'Em Análise','em-atraso':'Em Atraso',devolvidos:'Devolvidos',aprovados:'Aprovados',rejeitados:'Rejeitados',fluxo:'Fluxo de Crédito',sla:'SLA & Prazos',individuais:'Clientes Individuais',empresas:'Empresas',balcoes:'Balcões',equipas:'Equipas',risco:'Análise de Risco',compliance:'Compliance',fraude:'Alertas de Fraude',alertas:'Alertas',relatorios:'Analytics',exportar:'Exportar Dados',usuarios:'Utilizadores',permissoes:'Perfis & Permissões',config:'Configurações'};
+const stateFilter={'em-analise':'Em Análise','em-atraso':null,devolvidos:'Devolvido',aprovados:'Aprovado',rejeitados:'Rejeitado'};
+let activeStateFilter=null,showTop10=false,curPage=1,sc=-1,sa=true;
+const PP=8;
+
+function nav(id,el){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  const isProc=['processos','em-analise','em-atraso','devolvidos','aprovados','rejeitados'].includes(id);
+  const vid=isProc?'processos':id;
+  document.getElementById('v-'+vid)?.classList.add('on');
+  document.getElementById('pg-title').textContent=titles[id]||id;
+  document.getElementById('proc-banner-title').textContent=titles[id]||'Processos';
+  if(isProc){activeStateFilter=stateFilter[id]||null;applyF();}
+  if(id==='sla'&&!slaInit){initSLARings();slaInit=true;}
+  if(id==='balcoes'&&!balcaoInit){initBalcaoChart();balcaoInit=true;}
+  if(id==='fluxo'&&!flowInit){initFlowCharts();flowInit=true;}
+}
+
+function genData(){
+  const clients=[["Grupo Sonangol","Empresa"],["Maria Fernandes","Mass Market"],["Telefónica Angola","Empresa"],["José Burity","Affluent"],["TAAG Airlines","Empresa"],["Ana Lopes","Mass Market"],["Odebrecht SA","Empresa"],["Pedro Neto","Affluent"],["BFA Investimentos","Private"],["Sofia Cardoso","Mass Market"],["Grupo Mota-Engil","Empresa"],["Carlos Mendes","Affluent"],["Endiama EP","Empresa"],["Rosa Teixeira","Mass Market"],["SBA Angola","Empresa"],["Miguel Fonseca","Affluent"],["Puma Energy","Empresa"],["Beatriz Santos","Mass Market"],["UNITEL SA","Empresa"],["António Cunha","Affluent"],["Sonair","Empresa"],["Laura Ferreira","Mass Market"],["ExxonMobil Angola","Empresa"],["Rui Monteiro","Private"],["Supermercados Kero","Empresa"],["Fátima Dias","Mass Market"],["Chevron Angola","Empresa"],["Bruno Leitão","Affluent"],["Banco BIC","Empresa"],["Celeste Nunes","Mass Market"]];
+  const balcoes=["Luanda Centro","Luanda Norte","Benguela","Huambo","Cabinda"];
+  const estados=["Em Análise","Carregado","Devolvido","Aprovado","Crítico","Rejeitado"];
+  const analysts=[["Ana Rodrigues","Pedro Costa"],["João Silva","Maria Lima"],["Carla Neto","Rui Santos"],["Bruno Ferreira","Sofia Cruz"],["Marta Oliveira","Tiago Gomes"],["Paulo Sousa","Inês Martins"]];
+  return clients.map(([c,seg],i)=>{const delay=Math.floor(Math.random()*32);return{id:`CGD-${2025001+i}`,client:c,seg,balcao:balcoes[i%5],value:Math.floor(Math.random()*50000000+500000),resp1:analysts[i%6][0],resp2:analysts[i%6][1],delay,estado:estados[Math.floor(Math.random()*estados.length)]};}).sort((a,b)=>b.delay-a.delay);
+}
+const ALL=genData();let filtered=[...ALL];
+
+function segChip(s){const m={Mass:'sc-mm',Affluent:'sc-af',Empresa:'sc-em',Private:'sc-pv'};const k=Object.keys(m).find(k=>s.startsWith(k))||'sc-mm';return`<span class="seg-chip ${m[k]}">${s}</span>`;}
+function stBadge(s){const m={'Em Análise':'sb-an','Carregado':'sb-ca','Devolvido':'sb-dv','Aprovado':'sb-ap','Crítico':'sb-cr','Rejeitado':'sb-rj'};return`<span class="st-b ${m[s]||'sb-an'}">${s}</span>`;}
+function dpill(d){if(d>=15)return`<span class="dp dp-r"><ion-icon name="alert-circle-outline"></ion-icon>&thinsp;${d}d</span>`;if(d>=7)return`<span class="dp dp-y"><ion-icon name="time-outline"></ion-icon>&thinsp;${d}d</span>`;return`<span class="dp dp-g"><ion-icon name="checkmark-outline"></ion-icon>&thinsp;${d}d</span>`;}
+function fmtV(v){return(v/1000000).toFixed(2)+'M Kz';}
+
+function renderTable(){
+  const data=showTop10?filtered.slice(0,10):filtered;
+  const s=(curPage-1)*PP,page=data.slice(s,s+PP);
+  document.getElementById('ptbody').innerHTML=page.map(r=>`<tr><td><span class="id-mono">${r.id}</span></td><td><div class="cn">${r.client}</div><div class="cs">${r.balcao}</div></td><td>${segChip(r.seg)}</td><td style="font-size:.71rem;color:var(--t2);">${r.balcao}</td><td style="font-weight:700;font-size:.73rem;">${fmtV(r.value)}</td><td><div style="font-size:.72rem;font-weight:600;">${r.resp1}</div><div class="cs">${r.resp2}</div></td><td>${dpill(r.delay)}</td><td>${stBadge(r.estado)}</td></tr>`).join('');
+  const tot=data.length,pages=Math.ceil(tot/PP);
+  document.getElementById('pag-i').textContent=`${Math.min(s+1,tot)}–${Math.min(s+PP,tot)} de ${tot}`;
+  const pb=document.getElementById('pag-b');pb.innerHTML='';
+  if(pages>1)for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pb'+(i===curPage?' on':'');b.textContent=i;b.onclick=(pg=>()=>{curPage=pg;renderTable();})(i);pb.appendChild(b);}
+  document.getElementById('bk-total').textContent=filtered.length;
+  document.getElementById('bk-crit').textContent=filtered.filter(r=>r.delay>=15).length;
+  document.getElementById('bk-atr').textContent=filtered.filter(r=>r.delay>0).length;
+}
+function applyF(){
+  const s=document.getElementById('srch').value.toLowerCase(),seg=document.getElementById('f-seg').value,est=document.getElementById('f-est').value||activeStateFilter,bal=document.getElementById('f-bal').value;
+  let base=ALL;
+  if(activeStateFilter&&!document.getElementById('f-est').value)base=activeStateFilter==='em-atraso'?ALL.filter(r=>r.delay>0):ALL.filter(r=>r.estado===activeStateFilter);
+  if(activeStateFilter==='em-atraso')filtered=ALL.filter(r=>r.delay>0&&(!s||r.client.toLowerCase().includes(s))&&(!seg||r.seg===seg)&&(!bal||r.balcao===bal));
+  else filtered=base.filter(r=>{const ms=!s||(r.client.toLowerCase().includes(s)||r.id.toLowerCase().includes(s)||r.resp1.toLowerCase().includes(s));return ms&&(!seg||r.seg===seg)&&(!est||r.estado===est)&&(!bal||r.balcao===bal);});
+  curPage=1;renderTable();
+}
+function tglTop10(){showTop10=!showTop10;document.getElementById('t10-btn').classList.toggle('on',showTop10);curPage=1;renderTable();}
+function srt(col){if(sc===col)sa=!sa;else{sc=col;sa=true;}const keys=[null,'client',null,'balcao','value',null,'delay',null];const k=keys[col];if(!k)return;filtered.sort((a,b)=>typeof a[k]==='number'?(sa?a[k]-b[k]:b[k]-a[k]):(sa?a[k].localeCompare(b[k]):b[k].localeCompare(a[k])));renderTable();}
+function renderAlerts(){const A=[{s:'high',t:'12 processos críticos fora do prazo',d:'SLA ultrapassado há mais de 15 dias.',ic:'flame-outline',tm:'Agora'},{s:'high',t:'SLA abaixo de 80% — Luanda Norte',d:'61% de cumprimento registado.',ic:'trending-down-outline',tm:'2h atrás'},{s:'med',t:'Aumento de devoluções +8%',d:'Comparado à semana anterior.',ic:'return-up-back-outline',tm:'4h atrás'},{s:'med',t:'5 processos próximos do limite SLA',d:'Prazo a expirar em 24 horas.',ic:'time-outline',tm:'6h atrás'},{s:'low',t:'Core Bancário — latência elevada',d:'Atraso médio de 3.2s.',ic:'cloud-offline-outline',tm:'1d atrás'},{s:'low',t:'Novo analista — Benguela',d:'Carla Neto integrou o balcão.',ic:'person-add-outline',tm:'2d atrás'}];const sl={high:'sev-h',med:'sev-m',low:'sev-l'},sl2={high:'Alto',med:'Médio',low:'Baixo'};document.getElementById('alert-full-list').innerHTML=A.map(a=>`<div class="al ${a.s}"><ion-icon name="${a.ic}" class="al-ico"></ion-icon><div class="al-body"><strong>${a.t}</strong><p>${a.d}</p></div><div class="al-r"><span class="sev-tag ${sl[a.s]}">${sl2[a.s]}</span><span class="al-time">${a.tm}</span></div></div>`).join('');}
+function renderTeams(){const T=[{i:'A',c:'#3b82f6',n:'Ana Rodrigues',r:'Analista Sénior',p:42,s:88,d:3},{i:'J',c:'#10b981',n:'João Silva',r:'Analista',p:35,s:74,d:8},{i:'C',c:'#f59e0b',n:'Carla Neto',r:'Analista',p:28,s:92,d:1},{i:'B',c:'#8b5cf6',n:'Bruno Ferreira',r:'Analista Sénior',p:51,s:67,d:12},{i:'M',c:'#ef4444',n:'Marta Oliveira',r:'Chefe de Equipa',p:19,s:95,d:0},{i:'P',c:'#06b6d4',n:'Paulo Sousa',r:'Analista',p:38,s:79,d:6}];document.getElementById('team-grid').innerHTML=T.map(t=>`<div class="team-card"><div class="tc2-top"><div class="tc2-av" style="background:${t.c}">${t.i}</div><div><div class="tc2-name">${t.n}</div><div class="tc2-role">${t.r}</div></div></div><div class="tc2-stats"><div class="tc2-stat"><strong>${t.p}</strong><span>Processos</span></div><div class="tc2-stat"><strong style="color:${t.s>=80?'var(--green)':'var(--red)'};">${t.s}%</strong><span>SLA</span></div><div class="tc2-stat"><strong style="color:${t.d>5?'var(--red)':'var(--green)'};">${t.d}d</strong><span>Atraso</span></div></div></div>`).join('');}
+function renderClients(){const ind=[{i:'M',c:'#3b82f6',n:'Maria Fernandes',t:'Mass Market',p:3,s:88,v:'12.4M'},{i:'A',c:'#10b981',n:'Ana Lopes',t:'Mass Market',p:2,s:92,v:'8.7M'},{i:'P',c:'#f59e0b',n:'Pedro Neto',t:'Affluent',p:5,s:76,v:'45.2M'},{i:'S',c:'#8b5cf6',n:'Sofia Cardoso',t:'Mass Market',p:1,s:100,v:'5.1M'},{i:'R',c:'#ef4444',n:'Rui Monteiro',t:'Private',p:4,s:82,v:'120.5M'},{i:'B',c:'#06b6d4',n:'Beatriz Santos',t:'Mass Market',p:2,s:94,v:'7.8M'}];const emp=[{i:'S',c:'#3b82f6',n:'Grupo Sonangol',t:'Empresa',p:8,s:71,v:'380M'},{i:'T',c:'#10b981',n:'Telefónica Angola',t:'Empresa',p:4,s:88,v:'210M'},{i:'U',c:'#f59e0b',n:'UNITEL SA',t:'Empresa',p:6,s:65,v:'450M'},{i:'E',c:'#8b5cf6',n:'ExxonMobil Angola',t:'Empresa',p:3,s:92,v:'680M'},{i:'K',c:'#ef4444',n:'Supermercados Kero',t:'Empresa',p:5,s:80,v:'95M'},{i:'B',c:'#06b6d4',n:'Banco BIC',t:'Private',p:2,s:96,v:'820M'}];const html=D=>D.map(c=>`<div class="client-card"><div class="cli-top"><div class="cli-av" style="background:${c.c}">${c.i}</div><div><div class="cli-name">${c.n}</div><div class="cli-type">${c.t}</div></div></div><div class="cli-stats"><div class="cli-stat"><strong>${c.p}</strong><span>Processos</span></div><div class="cli-stat"><strong style="color:${c.s>=80?'var(--green)':'var(--red)'};">${c.s}%</strong><span>SLA</span></div><div class="cli-stat"><strong style="font-size:.72rem;">${c.v}</strong><span>Valor Kz</span></div></div></div>`).join('');document.getElementById('ind-grid').innerHTML=html(ind);document.getElementById('emp-grid').innerHTML=html(emp);}
+function renderRisk(){const R=[{n:'Grupo Sonangol',v:'380M',s:72,l:'Médio'},{n:'TAAG Airlines',v:'95M',s:45,l:'Alto'},{n:'BFA Investimentos',v:'210M',s:88,l:'Baixo'},{n:'Puma Energy',v:'150M',s:61,l:'Médio'},{n:'Ana Lopes',v:'8.7M',s:91,l:'Baixo'},{n:'Endiama EP',v:'320M',s:38,l:'Muito Alto'}];const scl=s=>s>=80?'rs-g':s>=60?'rs-y':'rs-r';document.getElementById('risk-grid').innerHTML=`<div class="risk-card"><h6><ion-icon name="analytics-outline" style="color:var(--blue);"></ion-icon>Score de Crédito</h6>${R.map(r=>`<div class="risk-row"><span>${r.n} <small style="color:var(--t3);">(${r.v} Kz)</small></span><span class="risk-score ${scl(r.s)}">${r.s}/100</span></div>`).join('')}</div><div class="risk-card"><h6><ion-icon name="shield-outline" style="color:var(--red);"></ion-icon>Nível de Risco</h6>${R.map(r=>`<div class="risk-row"><span>${r.n}</span><span class="risk-score ${r.l==='Baixo'?'rs-g':r.l==='Médio'?'rs-y':'rs-r'}">${r.l}</span></div>`).join('')}</div>`;}
+
+function genRecentCredits(){
+  const clients=[["Grupo Sonangol","Empresa"],["Maria Fernandes","Mass Market"],["Telefónica Angola","Empresa"],["José Burity","Affluent"],["TAAG Airlines","Empresa"],["Ana Lopes","Mass Market"],["Odebrecht SA","Empresa"],["Pedro Neto","Affluent"],["BFA Investimentos","Private"],["Sofia Cardoso","Mass Market"],["Grupo Mota-Engil","Empresa"],["Carlos Mendes","Affluent"],["Endiama EP","Empresa"],["Rosa Teixeira","Mass Market"],["SBA Angola","Empresa"],["Miguel Fonseca","Affluent"],["Puma Energy","Empresa"],["Beatriz Santos","Mass Market"],["UNITEL SA","Empresa"],["António Cunha","Affluent"]];
+  const balcoes=["Luanda Centro","Luanda Norte","Benguela","Huambo","Cabinda"];
+  const estados=["Em Análise","Carregado","Devolvido","Aprovado","Crítico","Rejeitado"];
+  const operators=[
+    {name:"Ana Rodrigues",role:"Analista Sénior",color:"#3b82f6"},
+    {name:"João Silva",role:"Analista",color:"#10b981"},
+    {name:"Carla Neto",role:"Analista",color:"#f59e0b"},
+    {name:"Bruno Ferreira",role:"Analista Sénior",color:"#8b5cf6"},
+    {name:"Marta Oliveira",role:"Chefe de Equipa",color:"#ef4444"},
+    {name:"Paulo Sousa",role:"Analista",color:"#06b6d4"}
+  ];
+  const now=Date.now();
+  return clients.map(([c,seg],i)=>{
+    const op=operators[i%operators.length];
+    const hoursAgo=Math.floor(Math.random()*72);
+    const createdAt=new Date(now-hoursAgo*3600000);
+    const delay=Math.floor(Math.random()*28);
+    return{
+      id:`CGD-${2025030-i}`,client:c,seg,
+      balcao:balcoes[i%5],
+      value:Math.floor(Math.random()*80000000+500000),
+      operator:op,delay,
+      estado:estados[Math.floor(Math.random()*estados.length)],
+      createdAt,hoursAgo
+    };
+  }).sort((a,b)=>a.hoursAgo-b.hoursAgo);
+}
+
+const RECENT=genRecentCredits();
+let dashFiltered=[...RECENT],dashPage=1,dashSortCol='createdAt',dashSortAsc=false;
+const DASH_PP=8;
+
+function fmtTime(d){
+  const h=d.hoursAgo;
+  if(h<1)return'Agora mesmo';
+  if(h<24)return`${h}h atrás`;
+  return`${Math.floor(h/24)}d atrás`;
+}
+
+function dashSort(col){
+  if(dashSortCol===col)dashSortAsc=!dashSortAsc;
+  else{dashSortCol=col;dashSortAsc=col!=='createdAt';}
+  const asc=dashSortAsc;
+  dashFiltered.sort((a,b)=>{
+    let va=a[col],vb=b[col];
+    if(col==='createdAt'){va=a.hoursAgo;vb=b.hoursAgo;}
+    if(typeof va==='number')return asc?va-vb:vb-va;
+    return asc?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+  });
+  dashPage=1;renderDashTable();
+}
+
+function dashFilter(){
+  const s=(document.getElementById('dash-srch')?.value||'').toLowerCase();
+  const est=document.getElementById('dash-est')?.value||'';
+  const bal=document.getElementById('dash-bal')?.value||'';
+  dashFiltered=RECENT.filter(r=>{
+    const ms=!s||(r.client.toLowerCase().includes(s)||r.id.toLowerCase().includes(s)||r.operator.name.toLowerCase().includes(s));
+    return ms&&(!est||r.estado===est)&&(!bal||r.balcao===bal);
+  });
+  dashPage=1;renderDashTable();
+}
+
+function renderDashTable(){
+  const s=(dashPage-1)*DASH_PP,page=dashFiltered.slice(s,s+DASH_PP);
+  const tbody=document.getElementById('dash-tbody');
+  if(!tbody)return;
+  tbody.innerHTML=page.map(r=>`
+    <tr>
+      <td><span class="id-mono">${r.id}</span></td>
+      <td>
+        <div class="cn">${r.client}</div>
+        <div class="cs">${r.balcao}</div>
+      </td>
+      <td>${segChip(r.seg)}</td>
+      <td style="font-weight:700;font-size:.73rem;white-space:nowrap;">${fmtV(r.value)}</td>
+      <td style="font-size:.71rem;color:var(--t2);">${r.balcao}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:7px;">
+          <div style="width:26px;height:26px;border-radius:50%;background:${r.operator.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;flex-shrink:0;">${r.operator.name[0]}</div>
+          <div>
+            <div style="font-size:.72rem;font-weight:600;">${r.operator.name}</div>
+            <div class="cs">${r.operator.role}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <ion-icon name="time-outline" style="color:var(--t3);font-size:.8rem;"></ion-icon>
+          <span style="font-size:.72rem;color:var(--t2);">${fmtTime(r)}</span>
+        </div>
+      </td>
+      <td>${dpill(r.delay)}</td>
+      <td>${stBadge(r.estado)}</td>
+    </tr>`).join('');
+  const tot=dashFiltered.length,pages=Math.ceil(tot/DASH_PP);
+  const pi=document.getElementById('dash-pag-i');
+  if(pi)pi.textContent=`${Math.min(s+1,tot)}–${Math.min(s+DASH_PP,tot)} de ${tot} créditos`;
+  const pb=document.getElementById('dash-pag-b');
+  if(pb){pb.innerHTML='';
+    if(pages>1)for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pb'+(i===dashPage?' on':'');b.textContent=i;b.onclick=(pg=>()=>{dashPage=pg;renderDashTable();})(i);pb.appendChild(b);}}
+}
+
+function initApp(){
+  document.getElementById('dtag').textContent=new Date().toLocaleDateString('pt-PT',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  initMainCharts();renderTable();renderDashTable();renderAlerts();renderTeams();renderClients();renderRisk();
+  if(window.innerWidth<=900)document.getElementById('mob-menu').style.display='flex';
+}
+</script>
+</body>
+</html>
